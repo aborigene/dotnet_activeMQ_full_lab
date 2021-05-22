@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "bacen_receiver": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\igor.simoes\\GitRepos\\banestes_full_lab\\bacen_receiver\\bacen_receiver\\bin\\Debug\\netcoreapp3.1\\bacen_receiver.exe"
+    }
+  }
+}
