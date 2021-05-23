@@ -4,8 +4,9 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS BUILD
 WORKDIR /src
 COPY ["bacen_processor.csproj", "bacen_processor.sln", "Program.cs", "/src/"]
-RUN pwd
-RUN ls
+
+RUN /bin/bash -c 'PWD=`pwd`; echo $PWD' 
+RUN /bin/bash -c 'LS=`ls`; echo $LS'
 RUN dotnet restore bacen_processor.csproj
 RUN dotnet build "bacen_processor.csproj" -c Release -o /app/build
 
