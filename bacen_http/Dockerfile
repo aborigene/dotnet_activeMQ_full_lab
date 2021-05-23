@@ -3,7 +3,7 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS BUILD
 WORKDIR /src
-COPY ["bacen_http.csproj", "bacen_http.sln", "Program.cs", "Startup.cs", "wwwroot/", "Pages/", "Properties/", "/src/"]
+COPY ["bacen_http.csproj", "Program.cs", "Startup.cs", "wwwroot/", "Pages/", "Properties/", "/src/"]
 RUN dotnet restore bacen_processor.csproj
 RUN dotnet build "bacen_http.csproj" -c Release -o /app/build
 
