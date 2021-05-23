@@ -8,7 +8,8 @@ COPY ["bacen_processor.csproj", "bacen_processor.sln", "Program.cs", "/src/"]
 RUN /bin/bash -c 'PWD=`pwd`; echo $PWD' 
 RUN /bin/bash -c 'LS=`ls`; echo $LS'
 RUN dotnet restore bacen_processor.csproj
-RUN dotnet build "bacen_processor.csproj" -c Release -o /app/build
+
+RUN dotnet build "/src/bacen_processor.csproj" -c Release -o /app/build
 
 FROM BUILD as PUBLISH
 RUN dotnet publish "bacen_processor.csproj" -c Release -o /app/publish
