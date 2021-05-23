@@ -1,7 +1,7 @@
-FROM mcr.microsoft.com/dotnet/runtime:4.7 AS BASE
+FROM mcr.microsoft.com/dotnet/runtime:5.0 AS BASE
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:4.7 AS BUILD
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS BUILD
 WORKDIR /src
 COPY ["bacen_receiver.csproj", "bacen_receiver.sln", "Program.cs", "/src/"]
 RUN dotnet restore "bacen_receiver.csproj"
