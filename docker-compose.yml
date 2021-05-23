@@ -19,11 +19,11 @@ services:
       - 5000:5000
   bacen_receiver:
     container_name: bacen_receiver
-    build: ./bacen_receiver
+    build: ./bacen_receiver/bacen_receiver
     image: bacen_receiver:v1
   bacen_processor:
     container_name: bacen_processor
-    build: ./bacen_processor
+    build: ./bacen_processor/bacen_processor
     image: bacen_processor:v1
   pix_processor:
     container_name: pix_processor
