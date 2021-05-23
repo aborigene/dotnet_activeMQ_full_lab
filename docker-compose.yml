@@ -1,0 +1,35 @@
+version: "3"
+services:
+  activemq-artemis:
+    container_name: activemq-artemis
+    image: vromero/activemq-artemis
+    environment:
+      - ARTEMIS_USERNAME=guest
+      - ARTEMIS_PASSWORD=guest
+    ports:
+      - 5672:5672
+      - 8161:8161
+      - 61616:61616
+      - 61613:61613
+  bacen_http:
+    container_name: bacen_http
+    build: ./bacen_http
+    image: bacen_http:v1
+    ports:
+      - 5000:5000
+  bacen_receiver:
+    container_name: bacen_receiver
+    build: ./bacen_receiver
+    image: bacen_receiver:v1
+  bacen_processor:
+    container_name: bacen_processor
+    build: ./bacen_processor
+    image: bacen_processor:v1
+  pix_processor:
+    container_name: pix_processor
+    build: ./pix_processor
+    image: pix_processor:v1
+  pix_sensibiliza:
+    container_name: pix_sensibiliza
+    build: ./pix_sensibiliza
+    image: pix_sensibiliza:v1

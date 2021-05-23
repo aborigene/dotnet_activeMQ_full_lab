@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "tXsPD6M71xsrXQxFm6ZPmpNjwGAE8jodNSjdPwNhaamAZAMxM639404LF30yBtnwMYaKdLX4uiVMBUVU37W1HA==",
+  "dgSpecHash": "caQuvcYw4bkQakO940J6HqjT527F2blpSlGzODr8QieFvxYEh+RiXIEo9SATZeWOawSnkQvr3UunMBsx/leAaA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\igor.simoes\\GitRepos\\banestes_full_lab\\bacen_receiver\\bacen_receiver\\bacen_receiver.csproj",
+  "projectFilePath": "C:\\Users\\igor.simoes\\GitRepos\\dotnet_activeMQ_full_lab\\bacen_receiver\\bacen_receiver\\bacen_receiver.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\igor.simoes\\.nuget\\packages\\apache.nms\\1.8.0\\apache.nms.1.8.0.nupkg.sha512",
     "C:\\Users\\igor.simoes\\.nuget\\packages\\apache.nms.activemq\\1.8.0\\apache.nms.activemq.1.8.0.nupkg.sha512",

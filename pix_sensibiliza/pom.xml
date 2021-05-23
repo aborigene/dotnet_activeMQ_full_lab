@@ -8,7 +8,7 @@
 		<version>2.4.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.dynatrace.banestes_lab</groupId>
+	<groupId>com.dynatrace.sdk_lab</groupId>
 	<artifactId>pix_sensibiliza</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>pix_sensibiliza</name>

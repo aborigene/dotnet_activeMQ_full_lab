@@ -25,13 +25,14 @@ namespace bacen_receiver
 
             public override string ToString()
             {
-                string returnString = "{\"message_id\":\"" + this.message_id + "\", \"operation_count\":\"" + this.operation_count + "\",[";
+                string returnString = "{\"message_id\":\"" + this.message_id + "\", \"operation_count\":\"" + this.operation_count + "\", \"operations\": [";
                 int i = 1;
                 foreach (Operation operation in operations) {
                     returnString += operation.ToString();
                     if (i != operations.Length) returnString += ",";
+                    i++;
                 }
-                returnString = "}";
+                returnString += "]}";
                 return returnString;
             }
         }
@@ -51,32 +52,52 @@ namespace bacen_receiver
         static async Task ProcessBacenNewMessage(ISession session, IConnection connection, IMessageProducer producer, IMessagingSystemInfo messagingSystemInfo)
         {
             BacenMessage newBacenMessage = new BacenMessage();
-            IOutgoingWebRequestTracer tracer = OneAgentSdk.TraceOutgoingWebRequest("http://127.0.0.1:5000/new_pix", "GET");
-            
-            await tracer.Trace(async () =>
+            string pixURL = "http://127.0.0.1:5000/new_pix";
+            IOutgoingWebRequestTracer tracer = OneAgentSdk.TraceOutgoingWebRequest(pixURL, "GET");
+
+            /*await tracer.Trace(async () =>
             {
-                newBacenMessage = await RequestBacen();
-            });
+                try
+                {*/
+                    newBacenMessage = await RequestBacen(pixURL);
+                /*}
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception.Message);
+                }*/
+                
+            //});
             
             //String message = i + " - Hello World!";
             SendMessage(newBacenMessage, session, connection, producer, messagingSystemInfo);
 
         }
-        static async Task<BacenMessage> RequestBacen()
+        static async Task<BacenMessage> RequestBacen(string pixURL)
         {
-            //Int64 i = 0;
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Accept.Clear();
-            Console.WriteLine("Retrieving PIX infor from http://127.0.0.1:5000/new_pix");
-            Uri pix_message_uri = new Uri("http://127.0.0.1:5000/new_pix");
-
-            Task <String> client_response = client.GetStringAsync(pix_message_uri);
-            
-            String msg = await client_response;
-            Console.WriteLine("Received message: "+ msg);
-            BacenMessage bacenMessage = JsonConvert.DeserializeObject<BacenMessage>(msg);
-            return bacenMessage;
-
+            Uri pix_message_uri = new Uri(pixURL);
+            Console.WriteLine("Retrieving PIX info from "+pixURL);
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                //using (HttpResponseMessage response = await client.GetAsync(pix_message_uri).ConfigureAwait(false))
+                //using (HttpContent content = response.Content) 
+                //using (string )
+                try
+                {
+                    HttpResponseMessage response = await client.GetAsync(pix_message_uri);//.ConfigureAwait(false);
+                    HttpContent content = response.Content;
+                    string msg = await content.ReadAsStringAsync();
+                    Console.WriteLine("Received message: " + msg);
+                    BacenMessage bacenMessage = JsonConvert.DeserializeObject<BacenMessage>(msg);
+                    return bacenMessage;
+                }
+                catch (HttpRequestException e)
+                {
+                    Console.WriteLine("\nException Caught!");	
+                    Console.WriteLine("Message :{0} ",e.Message);
+                    return null;
+                }
+            }
         }
 
         static void SendMessage(BacenMessage newBacenMessage, ISession session, IConnection connection, IMessageProducer producer, IMessagingSystemInfo messagingSystemInfo)
@@ -88,6 +109,7 @@ namespace bacen_receiver
             request.NMSCorrelationID = newBacenMessage.message_id;
 
             string outgoing_tag = outgoingMessageTracer.GetDynatraceStringTag();
+            Console.WriteLine("Correlation ID: "+outgoing_tag);
             request.Properties[OneAgentSdkConstants.DYNATRACE_MESSAGE_PROPERTYNAME] = outgoing_tag; //GetDynatraceByteTag();
 
             producer.Send(request);
@@ -122,37 +144,28 @@ namespace bacen_receiver
             public int Interval { get; set; }
         }
 
-        static async Task Main(string[] args)
+        public static async Task DoEverything(string[] args)
         {
             string connection_url = "activemq:tcp://127.0.0.1:61616";
             Uri connecturi = new Uri(connection_url);
             Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(async (o) =>
                    {
-                       string destination_queue = "queue://treepix.queue.bacen.response";
                        bool daemon_mode = o.DaemonMode;
                        int interval = o.Interval;
+                       string destination_queue = "queue://treepix.queue.bacen.response";
 
                        Console.WriteLine("About to connect to " + connecturi);
-
                        // NOTE: ensure the nmsprovider-activemq.config file exists in the executable folder.
                        IConnectionFactory factory = new NMSConnectionFactory(connecturi);
-
-                       //IOneAgentSdk oneAgentSdk = oneAgentSdk = OneAgentSdkFactory.CreateInstance();
-
                        IMessagingSystemInfo messagingSystemInfo = OneAgentSdk.CreateMessagingSystemInfo(MessageSystemVendor.ACTIVE_MQ, destination_queue, MessageDestinationType.QUEUE, ChannelType.TCP_IP, connection_url);
 
                        //IInProcessLink inProcessLink = OneAgentSdk.CreateInProcessLink();
-
-
-
                        using (IConnection connection = factory.CreateConnection("guest", "guest"))
                        using (ISession session = connection.CreateSession())
                        {
-
                            IDestination destination = SessionUtil.GetDestination(session, destination_queue);
                            Console.WriteLine("Using destination: " + destination);
-
                            // Create a consumer and producer
                            using (IMessageConsumer consumer = session.CreateConsumer(destination))
                            using (IMessageProducer producer = session.CreateProducer(destination))
@@ -160,28 +173,32 @@ namespace bacen_receiver
                                // Start the connection so that messages will be processed.
                                connection.Start();
                                producer.DeliveryMode = MsgDeliveryMode.Persistent;
-                               //Int64 i = 0;
-
 
                                if (daemon_mode)
                                {
                                    while (true)
                                    {
-                                       await ProcessBacenNewMessage(session, connection, producer, messagingSystemInfo);
+                                       ProcessBacenNewMessage(session, connection, producer, messagingSystemInfo).Wait();
                                        Thread.Sleep(interval);
                                    }
                                }
                                else
                                {
-                                   Console.WriteLine("Processing single message...");
-                                   await ProcessBacenNewMessage(session, connection, producer, messagingSystemInfo);
-                                   while (true) Console.WriteLine(".");
+                                   ProcessBacenNewMessage(session, connection, producer, messagingSystemInfo).Wait();
+                                   Thread.Sleep(100000);
                                }
+
                                
                            }
                        }
-                       //Thread.Sleep(500000);
+
                    });
+            
+        }
+
+        static void Main(string[] args)
+        {
+            DoEverything(args).Wait();
         }
     }
 }

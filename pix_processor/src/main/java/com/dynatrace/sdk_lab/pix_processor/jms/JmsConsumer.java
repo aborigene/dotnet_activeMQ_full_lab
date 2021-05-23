@@ -1,13 +1,13 @@
-package com.dynatrace.banestes_lab.pix_processor.jms;
+package com.dynatrace.sdk_lab.pix_processor.jms;
 
-import com.dynatrace.banestes_lab.pix_processor.model.Operation;
-import com.dynatrace.banestes_lab.pix_processor.model.MyQueueMessage;
-import com.dynatrace.banestes_lab.pix_processor.model.MyQueueMessageRepository;
+import com.dynatrace.sdk_lab.pix_processor.model.Operation;
+import com.dynatrace.sdk_lab.pix_processor.model.MyQueueMessage;
+import com.dynatrace.sdk_lab.pix_processor.model.MyQueueMessageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.core.JmsTemplate;
+//import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 import com.dynatrace.oneagent.sdk.OneAgentSDKFactory;
@@ -34,7 +34,7 @@ public class JmsConsumer implements MessageListener {
     OneAgentSDK oneAgentSdk = OneAgentSDKFactory.createInstance();
     
     @Override
-    @JmsListener(destination = "banestes.queue.pix")
+    @JmsListener(destination = "sdk.queue.pix")
     public void onMessage(Message message) {
         MessagingSystemInfo messagingSystemInfo = oneAgentSdk.createMessagingSystemInfo("DBMessaging", "table_queue", MessageDestinationType.QUEUE, ChannelType.OTHER, null);
         OutgoingMessageTracer outgoingMessageTracer = oneAgentSdk.traceOutgoingMessage(messagingSystemInfo);
@@ -64,6 +64,7 @@ public class JmsConsumer implements MessageListener {
                 System.out.println("This is a NON risky transfer, lets sendo to normal queue");
                 queue_name += ".low_risk";
             }
+            System.out.println("Correlation ID:" + outgoingMessageTracer.getDynatraceStringTag());
             MyQueueMessage message_to_send = new MyQueueMessage(pix_ammount, queue_name, outgoingMessageTracer.getDynatraceStringTag());
             MyQueueMessage sent_message = myQueueMessageRepository.save(message_to_send);
             outgoingMessageTracer.setVendorMessageId(String.valueOf(sent_message.getId()));

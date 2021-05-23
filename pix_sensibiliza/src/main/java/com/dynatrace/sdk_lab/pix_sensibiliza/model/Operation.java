@@ -1,4 +1,4 @@
-package com.dynatrace.banestes_lab.pix_processor.model;
+package com.dynatrace.sdk_lab.pix_processor.model;
 
 
 import java.io.Serializable;

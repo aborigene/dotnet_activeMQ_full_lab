@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.dynatrace.banestes_lab.pix_processor.model;
+package com.dynatrace.sdk_lab.pix_sensibiliza.model;
 
 /**
  *

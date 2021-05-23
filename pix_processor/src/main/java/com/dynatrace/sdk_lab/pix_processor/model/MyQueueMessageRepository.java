@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.dynatrace.banestes_lab.pix_processor.model;
+package com.dynatrace.sdk_lab.pix_processor.model;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;

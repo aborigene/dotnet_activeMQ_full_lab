@@ -1,4 +1,4 @@
-package com.dynatrace.banestes_lab.pix_processor.config;
+package com.dynatrace.sdk_lab.pix_processor.config;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,7 +8,7 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.ConnectionFactory;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.Arrays;
 
 @Configuration
@@ -23,7 +23,7 @@ public class ActiveMQConfig {
         activeMQConnectionFactory.setBrokerURL(brokerUrl);
         activeMQConnectionFactory.setUserName("guest");
         activeMQConnectionFactory.setPassword("guest");
-        activeMQConnectionFactory.setTrustedPackages(Arrays.asList("com.dynatrace.banestes_lab.pix_processor"));
+        activeMQConnectionFactory.setTrustedPackages(Arrays.asList("com.dynatrace.sdk_lab.pix_processor"));
         return  activeMQConnectionFactory;
     }
 

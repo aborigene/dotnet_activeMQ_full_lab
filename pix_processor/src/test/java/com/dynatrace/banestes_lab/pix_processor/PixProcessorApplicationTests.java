@@ -1,4 +1,4 @@
-package com.dynatrace.banestes_lab.pix_processor;
+package com.dynatrace.sdk_lab.pix_processor;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

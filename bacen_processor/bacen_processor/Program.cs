@@ -44,8 +44,10 @@ namespace bacen_processor
         public static void ReceiveMessage(IMessageConsumer consumer, ISession session, IMessageProducer producer, IMessagingSystemInfo messagingSystemInfo)
         {
             IIncomingMessageReceiveTracer receiveTracer = OneAgentSdk.TraceIncomingMessageReceive(messagingSystemInfo);
-            receiveTracer.Start();
+            
+            Console.WriteLine("Waiting for new message...");
             ITextMessage message = consumer.Receive() as ITextMessage;
+            receiveTracer.Start();
 
             IIncomingMessageProcessTracer processTracer = OneAgentSdk.TraceIncomingMessageProcess(messagingSystemInfo);
 
@@ -58,6 +60,7 @@ namespace bacen_processor
             {
                 Console.WriteLine("Iniciando OneAgent...");
                 string properties = message.Properties.GetString(OneAgentSdkConstants.DYNATRACE_MESSAGE_PROPERTYNAME);
+                Console.WriteLine("Correlation header: "+properties);
                 processTracer.SetDynatraceStringTag(properties);
             }
             // start processing:
@@ -88,7 +91,8 @@ namespace bacen_processor
 
                     string outgoing_tag = outgoingMessageTracer.GetDynatraceStringTag();
                     request.Properties[OneAgentSdkConstants.DYNATRACE_MESSAGE_PROPERTYNAME] = outgoing_tag;
-
+                    
+                    Console.WriteLine("Sending message to Java:" + request.Text);
                     producer.Send(request);
                     
                     outgoingMessageTracer.SetCorrelationId(request.NMSCorrelationID);    // optional
@@ -105,6 +109,7 @@ namespace bacen_processor
 
             string source_queue = "queue://treepix.queue.bacen.response";
             string destination_queue = "queue://banestes.queue.pix";
+            //string active_mq_ip = Environment.GetEnvironmentVariable("ACTIVE_MQ_IP");
             string connection_url = "activemq:tcp://127.0.0.1:61616";
             Uri connecturi = new Uri(connection_url);
 
@@ -116,12 +121,6 @@ namespace bacen_processor
             //IOneAgentSdk oneAgentSdk = OneAgentSdkFactory.CreateInstance();
 
             IMessagingSystemInfo messagingSystemInfo = OneAgentSdk.CreateMessagingSystemInfo(MessageSystemVendor.ACTIVE_MQ, source_queue, MessageDestinationType.QUEUE, ChannelType.TCP_IP, connection_url);
-
-            
-
-            
-
-
 
             using (IConnection connection = factory.CreateConnection("guest", "guest"))
             using (ISession session = connection.CreateSession())
@@ -142,7 +141,6 @@ namespace bacen_processor
                     while (true)
                     {
                         ReceiveMessage(consumer, session, producer, messagingSystemInfo);
-
                         //Thread.Sleep(2000);
                     }
                 }

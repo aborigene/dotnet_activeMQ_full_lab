@@ -4624,11 +4624,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\igor.simoes\\GitRepos\\banestes_full_lab\\bacen_receiver\\bacen_receiver\\bacen_receiver.csproj",
+      "projectUniqueName": "C:\\Users\\igor.simoes\\GitRepos\\dotnet_activeMQ_full_lab\\bacen_receiver\\bacen_receiver\\bacen_receiver.csproj",
       "projectName": "bacen_receiver",
-      "projectPath": "C:\\Users\\igor.simoes\\GitRepos\\banestes_full_lab\\bacen_receiver\\bacen_receiver\\bacen_receiver.csproj",
+      "projectPath": "C:\\Users\\igor.simoes\\GitRepos\\dotnet_activeMQ_full_lab\\bacen_receiver\\bacen_receiver\\bacen_receiver.csproj",
       "packagesPath": "C:\\Users\\igor.simoes\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\igor.simoes\\GitRepos\\banestes_full_lab\\bacen_receiver\\bacen_receiver\\obj\\",
+      "outputPath": "C:\\Users\\igor.simoes\\GitRepos\\dotnet_activeMQ_full_lab\\bacen_receiver\\bacen_receiver\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
