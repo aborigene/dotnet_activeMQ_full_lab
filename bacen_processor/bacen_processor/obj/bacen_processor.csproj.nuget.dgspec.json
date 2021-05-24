@@ -51,10 +51,6 @@
               "target": "Package",
               "version": "[1.8.0, )"
             },
-            "ConnectionFactory.NET": {
-              "target": "Package",
-              "version": "[1.0.6, )"
-            },
             "Dynatrace.OneAgent.Sdk": {
               "target": "Package",
               "version": "[1.7.1, )"

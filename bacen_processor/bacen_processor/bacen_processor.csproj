@@ -8,7 +8,6 @@
   <ItemGroup>
     <PackageReference Include="Apache.NMS" Version="1.8.0" />
     <PackageReference Include="Apache.NMS.ActiveMQ" Version="1.8.0" />
-    <PackageReference Include="ConnectionFactory.NET" Version="1.0.6" />
     <PackageReference Include="Dynatrace.OneAgent.Sdk" Version="1.7.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
