@@ -146,7 +146,7 @@ namespace bacen_receiver
 
         public static async Task DoEverything(string[] args)
         {
-            string connection_url = "activemq:tcp://127.0.0.1:61616";
+            string connection_url = "activemq:tcp://ec2-3-236-120-161.compute-1.amazonaws.com:61616";
             Uri connecturi = new Uri(connection_url);
             Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(async (o) =>
@@ -159,39 +159,55 @@ namespace bacen_receiver
                        // NOTE: ensure the nmsprovider-activemq.config file exists in the executable folder.
                        IConnectionFactory factory = new NMSConnectionFactory(connecturi);
                        IMessagingSystemInfo messagingSystemInfo = OneAgentSdk.CreateMessagingSystemInfo(MessageSystemVendor.ACTIVE_MQ, destination_queue, MessageDestinationType.QUEUE, ChannelType.TCP_IP, connection_url);
-
-                       //IInProcessLink inProcessLink = OneAgentSdk.CreateInProcessLink();
-                       using (IConnection connection = factory.CreateConnection("guest", "guest"))
-                       using (ISession session = connection.CreateSession())
+                        
+                       IConnection connection;
+                       bool connected = false;
+                       while (!connected)
                        {
-                           IDestination destination = SessionUtil.GetDestination(session, destination_queue);
-                           Console.WriteLine("Using destination: " + destination);
-                           // Create a consumer and producer
-                           using (IMessageConsumer consumer = session.CreateConsumer(destination))
-                           using (IMessageProducer producer = session.CreateProducer(destination))
+                           try
                            {
-                               // Start the connection so that messages will be processed.
-                               connection.Start();
-                               producer.DeliveryMode = MsgDeliveryMode.Persistent;
-
-                               if (daemon_mode)
+                               Console.WriteLine("Atempting connection...");
+                               connection = factory.CreateConnection("guest", "guest");
+                               connected = true;
+                               using (connection)
+                               using (ISession session = connection.CreateSession())
                                {
-                                   while (true)
+                                   IDestination destination = SessionUtil.GetDestination(session, destination_queue);
+                                   Console.WriteLine("Using destination: " + destination);
+                                   // Create a consumer and producer
+                                   using (IMessageConsumer consumer = session.CreateConsumer(destination))
+                                   using (IMessageProducer producer = session.CreateProducer(destination))
                                    {
-                                       ProcessBacenNewMessage(session, connection, producer, messagingSystemInfo).Wait();
-                                       Thread.Sleep(interval);
-                                   }
-                               }
-                               else
-                               {
-                                   ProcessBacenNewMessage(session, connection, producer, messagingSystemInfo).Wait();
-                                   Thread.Sleep(100000);
-                               }
+                                       // Start the connection so that messages will be processed.
+                                       connection.Start();
+                                       producer.DeliveryMode = MsgDeliveryMode.Persistent;
+
+                                       if (daemon_mode)
+                                       {
+                                           while (true)
+                                           {
+                                               ProcessBacenNewMessage(session, connection, producer, messagingSystemInfo).Wait();
+                                               Thread.Sleep(interval);
+                                           }
+                                       }
+                                       else
+                                       {
+                                           ProcessBacenNewMessage(session, connection, producer, messagingSystemInfo).Wait();
+                                           Thread.Sleep(100000);
+                                       }
 
                                
+                                   }
+                               }
+                           }
+                           catch (Apache.NMS.NMSConnectionException exception)
+                           {
+                               Console.WriteLine("ActiveMQ still not up, waiting 1s to retry...");
+                               Console.WriteLine(exception.Message);
+                               Thread.Sleep(1000);
                            }
                        }
-
+                       //IInProcessLink inProcessLink = OneAgentSdk.CreateInProcessLink();
                    });
             
         }

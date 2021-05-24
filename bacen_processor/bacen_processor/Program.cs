@@ -110,7 +110,7 @@ namespace bacen_processor
             string source_queue = "queue://treepix.queue.bacen.response";
             string destination_queue = "queue://banestes.queue.pix";
             //string active_mq_ip = Environment.GetEnvironmentVariable("ACTIVE_MQ_IP");
-            string connection_url = "activemq:tcp://127.0.0.1:61616";
+            string connection_url = "activemq:tcp://ec2-3-236-120-161.compute-1.amazonaws.com:61616";
             Uri connecturi = new Uri(connection_url);
 
             Console.WriteLine("About to connect to " + connecturi);
@@ -122,30 +122,50 @@ namespace bacen_processor
 
             IMessagingSystemInfo messagingSystemInfo = OneAgentSdk.CreateMessagingSystemInfo(MessageSystemVendor.ACTIVE_MQ, source_queue, MessageDestinationType.QUEUE, ChannelType.TCP_IP, connection_url);
 
-            using (IConnection connection = factory.CreateConnection("guest", "guest"))
-            using (ISession session = connection.CreateSession())
+            IConnection connection;
+            bool connected = false;
+            while (!connected)
             {
-                //connection.
-                IDestination source = SessionUtil.GetDestination(session, source_queue);
-                IDestination destination = SessionUtil.GetDestination(session, destination_queue);
-                Console.WriteLine("Using source: " + source);
-
-                // Create a consumer and producer
-                using (IMessageConsumer consumer = session.CreateConsumer(source))
-                using (IMessageProducer producer = session.CreateProducer(destination))
+                try
                 {
-                    // Start the connection so that messages will be processed.
-                    connection.Start();
-                    producer.DeliveryMode = MsgDeliveryMode.Persistent;
-
-                    // Consume a message
-                    while (true)
+                    Console.WriteLine("Atempting connection...");
+                    connection = factory.CreateConnection("guest", "guest");
+                    connected = true;
+                    using (connection)
+                    using (ISession session = connection.CreateSession())
                     {
-                        ReceiveMessage(consumer, session, producer, messagingSystemInfo);
-                        //Thread.Sleep(2000);
+                        //connection.
+                        IDestination source = SessionUtil.GetDestination(session, source_queue);
+                        IDestination destination = SessionUtil.GetDestination(session, destination_queue);
+                        Console.WriteLine("Using source: " + source);
+
+                        // Create a consumer and producer
+                        using (IMessageConsumer consumer = session.CreateConsumer(source))
+                        using (IMessageProducer producer = session.CreateProducer(destination))
+                        {
+                            // Start the connection so that messages will be processed.
+                            connection.Start();
+                            producer.DeliveryMode = MsgDeliveryMode.Persistent;
+
+                            // Consume a message
+                            while (true)
+                            {
+                                ReceiveMessage(consumer, session, producer, messagingSystemInfo);
+                                //Thread.Sleep(2000);
+                            }
+                        }
                     }
                 }
+                catch (Apache.NMS.NMSConnectionException exception)
+                {
+                    Console.WriteLine("ActiveMQ still not up, waiting 1s to retry...");
+                    Console.WriteLine(exception.Message);
+                    Thread.Sleep(1000);
+                }
             }
+            
+             
+            
         }
     }
 }
