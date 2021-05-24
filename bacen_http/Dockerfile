@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/runtime:5.0 AS BASE
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS BASE
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS BUILD
