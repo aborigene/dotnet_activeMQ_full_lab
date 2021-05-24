@@ -21,15 +21,29 @@ services:
     container_name: bacen_receiver
     build: ./bacen_receiver/bacen_receiver
     image: bacen_receiver:v1
+    depends_on:
+      - activemq-artemis
   bacen_processor:
     container_name: bacen_processor
     build: ./bacen_processor/bacen_processor
     image: bacen_processor:v1
+    depends_on:
+      - activemq-artemis
   pix_processor:
     container_name: pix_processor
     build: ./pix_processor
     image: pix_processor:v1
+    depends_on:
+      - activemq-artemis
+      - mysql
   pix_sensibiliza:
     container_name: pix_sensibiliza
     build: ./pix_sensibiliza
     image: pix_sensibiliza:v1
+    depends_on:
+      - mysql
+  mysql:
+    container_name: mysql_messaging
+    build: ./mysql
+    image: mysql_messaging:v1
+      

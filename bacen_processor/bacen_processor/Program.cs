@@ -125,6 +125,7 @@ namespace bacen_processor
             using (IConnection connection = factory.CreateConnection("guest", "guest"))
             using (ISession session = connection.CreateSession())
             {
+                //connection.
                 IDestination source = SessionUtil.GetDestination(session, source_queue);
                 IDestination destination = SessionUtil.GetDestination(session, destination_queue);
                 Console.WriteLine("Using source: " + source);
