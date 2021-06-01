@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Text;
 using CommandLine;
+using System.Collections.Generic;
 
 namespace bacen_receiver
 {
@@ -88,6 +89,20 @@ namespace bacen_receiver
                     HttpContent content = response.Content;
                     string msg = await content.ReadAsStringAsync();
                     Console.WriteLine("Received message: " + msg);
+                    response.Headers.GetValues("x-ca-err");
+                    IEnumerable<String> stringsFound = response.Headers.GetValues("x-ca-err");
+                    foreach (var someth in response.Headers.GetValues("x-ca-err"))
+                    {
+                        Console.WriteLine(someth);
+                    }
+                    //Console.WriteLine(stringsFound[0]);
+                    /*foreach (var key in response.Headers.)
+                        headers += key + "=" + Request.Headers[key] + Environment.NewLine;
+                    foreach (HttpHeaders headers in response.Headers.GetEnumerator())
+                    {
+                        
+                    }*/
+                    //Console.WriteLine("Header: "+response.Headers[];//.GetValues("x-ca-err").ToString());
                     BacenMessage bacenMessage = JsonConvert.DeserializeObject<BacenMessage>(msg);
                     return bacenMessage;
                 }
@@ -187,6 +202,8 @@ namespace bacen_receiver
                                            while (true)
                                            {
                                                ProcessBacenNewMessage(session, connection, producer, messagingSystemInfo).Wait();
+                                               
+                                               
                                                Thread.Sleep(interval);
                                            }
                                        }

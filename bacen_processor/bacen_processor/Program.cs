@@ -54,7 +54,6 @@ namespace bacen_processor
             string property = message.Properties[OneAgentSdkConstants.DYNATRACE_MESSAGE_PROPERTYNAME].ToString();
             Console.WriteLine(property);
 
-
             //if (message.Properties..Contains(OneAgentSdkConstants.DYNATRACE_MESSAGE_PROPERTYNAME))
             if (message.Properties.Contains(OneAgentSdkConstants.DYNATRACE_MESSAGE_PROPERTYNAME) && !message.Properties.GetString(OneAgentSdkConstants.DYNATRACE_MESSAGE_PROPERTYNAME).Equals(""))
             {
@@ -146,11 +145,12 @@ namespace bacen_processor
                             // Start the connection so that messages will be processed.
                             connection.Start();
                             producer.DeliveryMode = MsgDeliveryMode.Persistent;
-
                             // Consume a message
                             while (true)
                             {
                                 ReceiveMessage(consumer, session, producer, messagingSystemInfo);
+                                
+                                            
                                 //Thread.Sleep(2000);
                             }
                         }

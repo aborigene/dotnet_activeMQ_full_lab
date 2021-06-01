@@ -12,4 +12,4 @@ RUN mvn clean package -DskipTests
 #
 FROM openjdk:11.0.11-jre
 COPY --from=build /home/app/target/pix_sensibiliza-0.0.1-SNAPSHOT.jar /usr/local/lib/pix_sensibiliza-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java","-jar","/usr/local/lib/pix_sensibiliza-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["wait-for-it.sh", "127.0.0.1:3306", "--", "java","-jar","/usr/local/lib/pix_sensibiliza-0.0.1-SNAPSHOT.jar"]

@@ -46,6 +46,7 @@ namespace bacen_http
 
             app.UseAuthorization();
 
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/new_pix", async context =>
@@ -63,8 +64,19 @@ namespace bacen_http
                     }
                     bacen_message += "]}";
                     
+                    //foreach (
+                    foreach (var headerString in context.Request.Headers.GetCommaSeparatedValues("x-dynatrace"))
+                    {
+                        Console.WriteLine(headerString);    
+                    }
+                    
+                   
+                    context.Response.Headers.Add("x-ca-err","200");
+                    context.Response.Headers.Add("x-ca-err-value","Falta coisa");
+                    
                     await context.Response.WriteAsync(bacen_message);
                 });
+                endpoints.MapRazorPages();
             });
         }
     }

@@ -23,6 +23,7 @@ services:
     image: bacen_receiver:v1
     depends_on:
       - activemq-artemis
+      - bacen_http
   bacen_processor:
     container_name: bacen_processor
     build: ./bacen_processor/bacen_processor

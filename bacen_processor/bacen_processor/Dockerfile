@@ -17,4 +17,6 @@ RUN dotnet publish "bacen_processor.csproj" -c Release -o /app/publish
 FROM BASE as FINAL
 WORKDIR /app
 COPY --from=PUBLISH /app/publish .
-ENTRYPOINT ["dotnet", "bacen_processor.dll"] 
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /app/
+RUN chmod 755 /app/wait-for-it.sh
+ENTRYPOINT ["wait-for-it.sh", "127.0.0.1:61616", "--", "dotnet", "bacen_processor.dll"] 
